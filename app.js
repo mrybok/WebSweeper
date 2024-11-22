@@ -31,6 +31,7 @@ class UI {
     this.open = false;
     this.touchable = true;
     this.touchStart;
+    this.control_num = 0;
   }
 }
 
@@ -810,6 +811,7 @@ function displayProb() {
 }
 
 function frontline(preprocessed) {
+  this.control_num = 0;
   if (ui.openCount !== 0) {
     let prohibited = new Set();
     const hiddenUiMap = hiddenUi(prohibited);
@@ -834,27 +836,32 @@ function frontline(preprocessed) {
     const solutionSet = new Set();
     let overallMax = 0;
     let overallMin = 0;
-    subsystems.forEach(subsystem => {
-      const subSolution = commonSolution(
-        subsystem[0],
-        openSurrounding,
-        mappingsMap
-      );
-      let minimum = 900;
-      let maximum = 0;
-      subSolution.forEach(mapping => {
-        const bombs = mapping.get('bombs');
-        if (bombs < minimum) {
-          minimum = bombs;
-        }
-        if (bombs > maximum) {
-          maximum = bombs;
-        }
+    try {
+      subsystems.forEach(subsystem => {
+        const subSolution = commonSolution(
+          subsystem[0],
+          openSurrounding,
+          mappingsMap
+        );
+        let minimum = 900;
+        let maximum = 0;
+        subSolution.forEach(mapping => {
+          const bombs = mapping.get('bombs');
+          if (bombs < minimum) {
+            minimum = bombs;
+          }
+          if (bombs > maximum) {
+            maximum = bombs;
+          }
+        });
+        overallMax += maximum;
+        overallMin += minimum;
+        solutionSet.add([subSolution, minimum, maximum]);
       });
-      overallMax += maximum;
-      overallMin += minimum;
-      solutionSet.add([subSolution, minimum, maximum]);
-    });
+    } catch (e) {
+      document.getElementById('prob').innerHTML = 'Too many combinations. I cannot help you. 😓'
+      return;
+    }
 
     if (overallMax > ui.bombsLeft || overallMin + uknownClosed < ui.bombsLeft) {
       const toCombine = new Set();
@@ -1223,6 +1230,11 @@ function combineMappings(nearby1, mappings1, nearby2, mappings2) {
         }
         union.set('bombs', bombs);
         newMappings.add(union);
+        this.control_num += 1;
+
+        if (this.control_num >= 1000000) {
+          throw new Error('Too many Combinations');
+        }
       }
     }
   }
