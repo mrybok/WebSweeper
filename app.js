@@ -31,7 +31,7 @@ class UI {
     this.open = false;
     this.touchable = true;
     this.touchStart;
-    this.control_num = 0;
+    this.controlNum = 0;
   }
 }
 
@@ -811,7 +811,7 @@ function displayProb() {
 }
 
 function frontline(preprocessed) {
-  this.control_num = 0;
+  this.controlNum = 0;
   if (ui.openCount !== 0) {
     let prohibited = new Set();
     const hiddenUiMap = hiddenUi(prohibited);
@@ -1230,9 +1230,9 @@ function combineMappings(nearby1, mappings1, nearby2, mappings2) {
         }
         union.set('bombs', bombs);
         newMappings.add(union);
-        this.control_num += 1;
+        this.controlNum += 1;
 
-        if (this.control_num >= 1000000) {
+        if (this.controlNum >= 1000000) {
           throw new Error('Too many Combinations');
         }
       }
